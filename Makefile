@@ -4,8 +4,8 @@ CLIENT = client
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g -MMD
 
-SRCS_SER = server/server_main.c
-SRCS_CL = client/client_main.c
+SRCS_SER = server_folder/server_main.c
+SRCS_CL = client_folder/client_main.c
 UTILS = ./utils.c
 
 OBJS_SER = ${SRCS_SER:.c=.o}

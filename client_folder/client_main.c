@@ -12,12 +12,19 @@ int	weird_magic(int pid, unsigned char byte)
 	{
 		sig = mask[i] ^ (uint8_t)byte;
 		if (sig)
+		{
+			write(1, "1", 1);
 			if (kill(pid, SIGUSR1) < 0)
 				return (1);
+		}
 		else
+		{
+			write(1, "0", 1);
 			if (kill(pid, SIGUSR2) < 0)
 				return (1);
+		}
 		++i;
+		write(1, "\t", 1);
 	}
 	return (0);
 }
@@ -54,11 +61,11 @@ int	main(int ac, char **av)
 	catch.sa_flags = SA_SIGINFO;
 	catch.sa_sigaction = client_handler;
 	if ((sigaction(SIGUSR2, &catch, 0)) == -1)
-		error("Error sigaction\n");
+		error_throw("Error sigaction\n");
 	if (ac == 3)
 		send_data(atoi(av[1]), av[2]);
 	else
-		error("Error arguments\n");
+		error_throw("Error arguments\n");
 	while (1)
 		pause();
 	return (0);
