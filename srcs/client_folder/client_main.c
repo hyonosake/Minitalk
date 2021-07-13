@@ -1,20 +1,26 @@
 #include "../minitalk.h"
 
-void	decimal_conversion(char ascii, int power, int pid)
+void parse_bits(uint8_t byte, int pid)
 {
-	if (power > 0)
-		decimal_conversion(ascii / 2, power - 1, pid);
-	if ((ascii % 2) == 1)
+    static unsigned char mask[] = {128, 64, 32, 16, 8, 4, 2, 1};
+	int	pos;
+
+	pos = 0;
+	while (pos < 8)
 	{
-		if (kill(pid, SIGUSR1) == -1)
-			error_throw("Error transmitting signal SIGUSR1 to server");
+    	if ((byte & mask[pos]) != 0)
+		{
+			if (kill(pid, SIGUSR1) == -1)
+				error_throw("Error transmitting signal SIGUSR1 to server");
+		}
+		else
+		{
+			if (kill(pid, SIGUSR2) == -1)
+				error_throw("Error transmitting signal SIGUSR2 to server");
+		}
+		++pos;
+		usleep(100);
 	}
-	else
-	{
-		if (kill(pid, SIGUSR2) == -1)
-			error_throw("Error transmitting signal SIGUSR2 to server");
-	}
-	usleep(100);
 }
 
 int	byte_transmit(int pid, void *data)
@@ -25,7 +31,7 @@ int	byte_transmit(int pid, void *data)
 	i = 0;
 	message = (unsigned char *)data;
 	while (message[i])
-		decimal_conversion(message[i++], 7, pid);
+		parse_bits(message[i++], pid);
 	return (0);
 }
 
@@ -52,7 +58,7 @@ int	main(int ac, char **argv)
 		error_throw("You must pass server ID and a message!");
 	if ((sigaction(SIGUSR2, &sa, 0)) == -1)
 		error_throw("Client sigaction error occured");
-	byte_transmit(atoi(argv[1]), argv[2]);
+	byte_transmit(ft_atoi(argv[1]), argv[2]);
 	while (1)
 		pause();
 	return (0);

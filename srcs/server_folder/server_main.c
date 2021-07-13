@@ -2,22 +2,21 @@
 
 void	server_handler(int sig_num, siginfo_t *siginfo, void *data)
 {
-	static int	ascii = 0;
-	static int	power = 0;
+	static uint8_t	ch = 0;
+	static int	i = 0;
 
 	(void)data;
-	if (sig_num == SIGUSR1)
-		ascii += 1 << (7 - power);
-	power += 1;
-	if (power == 8)
+	ch |= 1 * (sig_num == SIGUSR1) << (7 - i);
+	++i;
+	if (i == 8)
 	{
-		if (ascii == 0)
+		if (ch == 0)
 			write(1, "\n", 1);
 		else
 		{
-			write(1, &(ascii), 1);
-			power = 0;
-			ascii = 0;
+			write(1, &(ch), 1);
+			i = 0;
+			ch = 0;
 		}
 		if (kill(siginfo->si_pid, SIGUSR2) == -1)
 			error_throw("Failed to send affirmative signal to client");
@@ -27,7 +26,6 @@ void	server_handler(int sig_num, siginfo_t *siginfo, void *data)
 int	main(int ac, char **av)
 {
 	struct sigaction	sa;
-
 	if (ac != 1 || av[1])
 		error_throw("Server should not take any arguments");
 	write(1, "Server is ready to recieve your VERY IMPORTANT messages...\n", 60);

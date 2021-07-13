@@ -20,10 +20,10 @@ uint32_t	ft_putstr(char *s)
 	return (ret_val);
 }
 
-void	ft_putnbr_base(u_int16_t num, int base)
+void	ft_putnbr_base(u_int32_t num, int base)
 {
 	static char	base_set[17] = "0123456789ABCDEF\0";
-	char		result[12];
+	char		result[15];
 	int			i;
 
 	i = 0;
@@ -50,3 +50,19 @@ void	error_throw(char *s)
 	write(1, "\n", 1);
 	exit(0);
 }
+
+uint32_t	ft_atoi(char *s)
+{
+	int			i;
+	uint32_t	num;
+
+	i = 0;
+	num = 0;
+	while (s[i] >= '0' && s[i] <= '9')
+		num = num * 10 + (s[i++] - '0');
+	if (s[i])
+		error_throw("Invalid PID input. Try again, I'll wait..");
+	return (num);
+}
+
+
