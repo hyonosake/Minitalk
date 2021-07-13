@@ -3,6 +3,7 @@
 uint32_t	ft_strlen(char *s)
 {
 	uint32_t	i;
+
 	if (!s)
 		return (0);
 	i = 0;
@@ -19,9 +20,9 @@ uint32_t	ft_putstr(char *s)
 	return (ret_val);
 }
 
-void		ft_putnbr_base(u_int16_t num, int base)
+void	ft_putnbr_base(u_int16_t num, int base)
 {
-	static char base_set[17] = "0123456789ABCDEF\0";
+	static char	base_set[17] = "0123456789ABCDEF\0";
 	char		result[12];
 	int			i;
 
@@ -31,7 +32,7 @@ void		ft_putnbr_base(u_int16_t num, int base)
 		write (1, "0", 1);
 		return ;
 	}
-	while(num)
+	while (num)
 	{
 		result[i++] = base_set[num % base];
 		num /= base;

@@ -11,11 +11,13 @@
 # define SIGUSER1 1
 # define SIGUSER2 0
 
-
 uint32_t	ft_strlen(char *s);
 uint32_t	ft_putstr(char *s);
 void		ft_putnbr_base(u_int16_t num, int base);
 void		error_throw(char *s);
-
+void		server_handler(int sig_num, siginfo_t *siginfo, void *data);
+void		client_handler(int sig_num, siginfo_t *siginfo, void *data);
+void		decimal_conversion(char ascii, int power, int pid);
+int			byte_transmit(int pid, void *data);
 
 #endif

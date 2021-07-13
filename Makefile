@@ -1,44 +1,48 @@
-SERVER = server
-CLIENT = client
+CLIENT = 	client
+SERVER = 	server
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g -MMD
+SRCS_CL =	./srcs/client_folder/client_main.c \
+			./srcs/utils.c
 
-SRCS_SER = server_folder/server_main.c
-SRCS_CL = client_folder/client_main.c
-UTILS = ./utils.c
+SRCS_SER = 	./srcs/server_folder/server_main.c \
+			./srcs/utils.c
 
-OBJS_SER = ${SRCS_SER:.c=.o}
-OBJS_CL = ${SRCS_CL:.c=.o}
-DOBJS_SER = ${SRCS_SER:.c=.d}
-DOBJS_CL = ${SRCS_CL:.c=.d}
+CC = 		gcc
+CFLAGS = 	-Wall -Wextra -Werror -g -MMD
+RM =		rm -rf
+
+OBJS_SER =	${SRCS_SER:.c=.o}
+OBJS_CL =	${SRCS_CL:.c=.o}
+DOBJS_SER =	${SRCS_SER:.c=.d}
+DOBJS_CL =	${SRCS_CL:.c=.d}
+
 
 %.o: %.c
-			$(CC) $(FLAGS) -c $< -o $@
+			$(CC) $(CFLAGS) -c $< -o $@
 
-all: 		$(SERVER) $(CLIENT)
+all:		$(CLIENT) $(SERVER)
 
-$(SERVER):	${OBJS_SER}
-			$(CC) $(CFLAGS) ${OBJS_SER} $(UTILS) -o $(SERVER)
-			mv ../server_folder $(SERVER)
+$(CLIENT):	$(OBJS_CL)
+			$(CC) $(FLAGS) $(OBJS_CL) -o $(CLIENT)
 
-$(CLIENT):	${OBJS_SER}
-			$(CC) $(CFLAGS) ${OBJS_CL} $(UTILS) -o $(CLIENT)
-			mv ../$(CLIENT) $(CLIENT)
+$(SERVER):	$(OBJS_SER)
+			$(CC) $(FLAGS) $(OBJS_SER) -o $(SERVER)
 
-clean:		
-			rm -rf $(OBJS_CL) $(DOBJS_CL)
-			rm -rf $(OBJS_SER) $(DOBJS_SER)
+clean:
+			$(RM) $(OBJS_CL) $(DOBJS_CL)
+			$(RM) $(OBJS_SER) $(DOBJS_SER)
 
 fclean:		clean
-			rm -rf $(CLIENT)
-			rm -rf (SERVER)
+			$(RM) $(CLIENT) $(SERVER)
+			$(RM) $(SERVER)
+			$(RM) $(CLIENT)
 
 re:			fclean all
 
 norm:		fclean
-			norminette ./*/*.c  
+			norminette * 
 
-.PHONY: all clean fclean re run bonus 
+.PHONY: all clean fclean re run bonus norm
 #.SILENT:
 -include $(DOBJS)
+

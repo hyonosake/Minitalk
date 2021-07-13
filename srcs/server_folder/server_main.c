@@ -1,12 +1,12 @@
 #include "../minitalk.h"
 
-void	server_handler(int signum, siginfo_t *siginfo, void *unused)
+void	server_handler(int sig_num, siginfo_t *siginfo, void *data)
 {
 	static int	ascii = 0;
 	static int	power = 0;
 
-	(void)unused;
-	if (signum == SIGUSR1)
+	(void)data;
+	if (sig_num == SIGUSR1)
 		ascii += 1 << (7 - power);
 	power += 1;
 	if (power == 8)
@@ -21,7 +21,6 @@ void	server_handler(int signum, siginfo_t *siginfo, void *unused)
 		}
 		if (kill(siginfo->si_pid, SIGUSR2) == -1)
 			error_throw("Failed to send affirmative signal to client");
-	
 	}
 }
 

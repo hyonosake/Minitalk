@@ -1,4 +1,4 @@
-# include "../minitalk.h"
+#include "../minitalk.h"
 
 void	decimal_conversion(char ascii, int power, int pid)
 {
@@ -19,8 +19,8 @@ void	decimal_conversion(char ascii, int power, int pid)
 
 int	byte_transmit(int pid, void *data)
 {
-	unsigned char *message;
-	int		i;
+	unsigned char	*message;
+	int				i;
 
 	i = 0;
 	message = (unsigned char *)data;
@@ -29,7 +29,7 @@ int	byte_transmit(int pid, void *data)
 	return (0);
 }
 
-void	server_handler(int sig_num, siginfo_t *siginfo, void *data)
+void	client_handler(int sig_num, siginfo_t *siginfo, void *data)
 {
 	(void)data;
 	(void)siginfo;
@@ -47,7 +47,7 @@ int	main(int ac, char **argv)
 	struct sigaction	sa;
 
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = server_handler;
+	sa.sa_sigaction = client_handler;
 	if (ac != 3)
 		error_throw("You must pass server ID and a message!");
 	if ((sigaction(SIGUSR2, &sa, 0)) == -1)
