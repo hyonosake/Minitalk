@@ -19,11 +19,11 @@ DOBJS_CL = ${SRCS_CL:.c=.d}
 all: 		$(SERVER) $(CLIENT)
 
 $(SERVER):	${OBJS_SER}
-			$(CC) $(CFLAGS) ${OBJS_SER} -o $(SERVER)
-			mv ../$(SERVER) $(SERVER)
+			$(CC) $(CFLAGS) ${OBJS_SER} $(UTILS) -o $(SERVER)
+			mv ../server_folder $(SERVER)
 
 $(CLIENT):	${OBJS_SER}
-			$(CC) $(CFLAGS) ${OBJS_CL} -o $(CLIENT)
+			$(CC) $(CFLAGS) ${OBJS_CL} $(UTILS) -o $(CLIENT)
 			mv ../$(CLIENT) $(CLIENT)
 
 clean:		

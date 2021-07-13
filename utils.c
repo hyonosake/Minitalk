@@ -46,5 +46,6 @@ void		ft_putnbr_base(u_int16_t num, int base)
 void	error_throw(char *s)
 {
 	ft_putstr(s);
+	write(1, "\n", 1);
 	exit(0);
 }

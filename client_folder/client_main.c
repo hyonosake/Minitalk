@@ -1,71 +1,58 @@
-#include "../minitalk.h"
+# include "../minitalk.h"
 
-int	weird_magic(int pid, unsigned char byte)
+void	decimal_conversion(char ascii, int power, int pid)
 {
-	static uint8_t	mask[8] = {126, 125, 123, 119, 111, 95, 63};
-	int				i;
-	unsigned char	byte_tmp;
-	bool			sig;
+	if (power > 0)
+		decimal_conversion(ascii / 2, power - 1, pid);
+	if ((ascii % 2) == 1)
+	{
+		if (kill(pid, SIGUSR1) == -1)
+			error_throw("Error transmitting signal SIGUSR1 to server");
+	}
+	else
+	{
+		if (kill(pid, SIGUSR2) == -1)
+			error_throw("Error transmitting signal SIGUSR2 to server");
+	}
+	usleep(100);
+}
+
+int	byte_transmit(int pid, void *data)
+{
+	unsigned char *message;
+	int		i;
 
 	i = 0;
-	while (i < 8)
-	{
-		sig = mask[i] ^ (uint8_t)byte;
-		if (sig)
-		{
-			write(1, "1", 1);
-			if (kill(pid, SIGUSR1) < 0)
-				return (1);
-		}
-		else
-		{
-			write(1, "0", 1);
-			if (kill(pid, SIGUSR2) < 0)
-				return (1);
-		}
-		++i;
-		write(1, "\t", 1);
-	}
+	message = (unsigned char *)data;
+	while (message[i])
+		decimal_conversion(message[i++], 7, pid);
 	return (0);
 }
 
-void	send_data(int pid, void *message)
+void	server_handler(int sig_num, siginfo_t *siginfo, void *data)
 {
-	unsigned char	*msg;
-	int				i;
-
-	i = 0;
-	msg = (unsigned char *)message;
-	while (msg[i])
-	{
-		if (weird_magic(pid, msg[i]))
-			error_throw("Bit transmittion failed ;[");
-		++i;
-	}
-}
-
-void	client_handler(int sigtype, siginfo_t *siginfo, void *data)
-{
-	(void)siginfo;
 	(void)data;
-	if (sigtype == SIGUSR1)
-		ft_putstr("Signal SIGUSR1 received!\n");
-	else if (sigtype == SIGUSR2)
-		ft_putstr("Signal SIGUSR2 received!\n");
+	(void)siginfo;
+	if (sig_num == SIGUSR2)
+	{
+		write(1, "Recieved by ID ", 16);
+		ft_putnbr_base(siginfo->si_pid, 10);
+	}
+	else if (sig_num == SIGUSR1)
+		error_throw("Weird signal. Exiting");
 }
 
-int	main(int ac, char **av)
+int	main(int ac, char **argv)
 {
-	struct sigaction	catch;
+	struct sigaction	sa;
 
-	catch.sa_flags = SA_SIGINFO;
-	catch.sa_sigaction = client_handler;
-	if ((sigaction(SIGUSR2, &catch, 0)) == -1)
-		error_throw("Error sigaction\n");
-	if (ac == 3)
-		send_data(atoi(av[1]), av[2]);
-	else
-		error_throw("Error arguments\n");
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = server_handler;
+	if (ac != 3)
+		error_throw("You must pass server ID and a message!");
+	if ((sigaction(SIGUSR2, &sa, 0)) == -1)
+		error_throw("Client sigaction error occured");
+	byte_transmit(atoi(argv[1]), argv[2]);
 	while (1)
 		pause();
 	return (0);
